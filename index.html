@@ -135,8 +135,8 @@
 
 
     /* Hide hint after open, show new hint */
-    .envelope-container.opened .tap-hint .t1{display:none}
-    .envelope-container.opened .tap-hint .t2{display:inline}
+    .envelope-container.opened .tap-hint .t1{display:none !important}
+    .envelope-container.opened .tap-hint .t2{display:inline !important}
 
     /* Hide content when opened */
     .envelope-container.opened .env-content{
@@ -232,30 +232,14 @@
     .tap-hint{
       position:absolute;
       bottom:8%;left:50%;transform:translateX(-50%);
-      display:flex;flex-direction:column;align-items:center;gap:10px;
       z-index:9;
       pointer-events:none;
     }
-    .tap-circle{
-      width:28px;height:28px;
-      border:1px solid var(--accent);
-      border-radius:50%;
-      display:flex;align-items:center;justify-content:center;
-      animation:tapBounce 2s ease-in-out infinite;
-    }
-    .tap-circle svg{
-      width:10px;height:10px;
-      stroke:var(--accent);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;
-    }
     .tap-label{
       font-family:'Nanum Myeongjo',serif;
-      font-size:13px;color:var(--accent);
+      font-size:13px;color:var(--ink-light);
       letter-spacing:1.5px;
       animation:pulse 2s ease-in-out infinite;
-    }
-    @keyframes tapBounce{
-      0%,100%{transform:translateY(0)}
-      50%{transform:translateY(-6px)}
     }
     @keyframes pulse{
       0%,100%{opacity:0.5}50%{opacity:1}
@@ -527,9 +511,8 @@
       </div>
       <!-- Hint -->
       <div class="tap-hint" id="tapHint">
-        <div class="tap-circle">
-          <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
-        </div>
+        <span class="tap-label t1">터치해 보세요</span>
+        <span class="tap-label t2" style="display:none">한번 더 터치하세요</span>
       </div>
     </div>
   </div>
