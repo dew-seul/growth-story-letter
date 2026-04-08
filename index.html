@@ -268,9 +268,10 @@
       display:flex;align-items:center;gap:4px;
       z-index:20;
       opacity:0;
-      animation:swipeHintIn 0.6s ease 0.8s forwards, swipeHintOut 0.6s ease 3.5s forwards;
+      transition:opacity 0.4s ease;
       pointer-events:none;
     }
+    .swipe-hint.show{opacity:1}
     .swipe-hint span{
       font-family:'Nanum Myeongjo',serif;
       font-size:12px;color:var(--ink-light);
@@ -283,12 +284,6 @@
     .swipe-chevrons svg{
       width:14px;height:14px;
       stroke:var(--ink-light);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;
-    }
-    @keyframes swipeHintIn{
-      to{opacity:1}
-    }
-    @keyframes swipeHintOut{
-      to{opacity:0;visibility:hidden}
     }
     @keyframes swipeSlide{
       0%,100%{transform:translateX(0)}
@@ -678,6 +673,7 @@
           // Show swipe hint
           const sh=document.getElementById('swipeHint');
           sh.style.display='flex';
+          sh.classList.add('show');
         },800);
       }
     });
@@ -694,6 +690,9 @@
       track.style.transform=`translateX(-${cur*100}vw)`;
       pageNum.textContent=`${cur+1} / ${total}`;
       activateCard(cur);
+      // Hide swipe hint on last card
+      const sh=document.getElementById('swipeHint');
+      if(sh) sh.classList.toggle('show', cur < total-1);
     }
 
     function activateCard(i){
