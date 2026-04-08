@@ -231,18 +231,68 @@
 
     .tap-hint{
       position:absolute;
-      bottom:5%;left:50%;transform:translateX(-50%);
-      font-family:'Nanum Myeongjo',serif;
-      font-size:12px;color:var(--ink-light);
-      letter-spacing:1px;
-      animation:pulse 2s ease-in-out infinite;
-      white-space:nowrap;
-      z-index:5;
+      bottom:8%;left:50%;transform:translateX(-50%);
+      display:flex;flex-direction:column;align-items:center;gap:10px;
+      z-index:9;
       pointer-events:none;
     }
-
+    .tap-circle{
+      width:44px;height:44px;
+      border:1.5px solid var(--accent);
+      border-radius:50%;
+      display:flex;align-items:center;justify-content:center;
+      animation:tapBounce 2s ease-in-out infinite;
+    }
+    .tap-circle svg{
+      width:16px;height:16px;
+      stroke:var(--accent);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;
+    }
+    .tap-label{
+      font-family:'Nanum Myeongjo',serif;
+      font-size:13px;color:var(--accent);
+      letter-spacing:1.5px;
+      animation:pulse 2s ease-in-out infinite;
+    }
+    @keyframes tapBounce{
+      0%,100%{transform:translateY(0)}
+      50%{transform:translateY(-6px)}
+    }
     @keyframes pulse{
-      0%,100%{opacity:0.4}50%{opacity:1}
+      0%,100%{opacity:0.5}50%{opacity:1}
+    }
+
+    /* Swipe hint for cards */
+    .swipe-hint{
+      position:fixed;
+      right:20px;top:50%;transform:translateY(-50%);
+      display:flex;align-items:center;gap:6px;
+      z-index:20;
+      opacity:0;
+      animation:swipeHintIn 0.6s ease 0.8s forwards, swipeHintOut 0.6s ease 3.5s forwards;
+      pointer-events:none;
+    }
+    .swipe-hint span{
+      font-family:'Nanum Myeongjo',serif;
+      font-size:12px;color:var(--ink-light);
+      letter-spacing:0.5px;
+    }
+    .swipe-chevrons{
+      display:flex;gap:2px;
+      animation:swipeSlide 1.2s ease-in-out infinite;
+    }
+    .swipe-chevrons svg{
+      width:14px;height:14px;
+      stroke:var(--ink-light);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;
+    }
+    @keyframes swipeHintIn{
+      to{opacity:1}
+    }
+    @keyframes swipeHintOut{
+      to{opacity:0;visibility:hidden}
+    }
+    @keyframes swipeSlide{
+      0%,100%{transform:translateX(0)}
+      50%{transform:translateX(6px)}
     }
 
     /* ===== SWIPE CARDS ===== */
@@ -481,9 +531,12 @@
         <div class="env-from">From: <span>공비서 원장님 드림</span></div>
       </div>
       <!-- Hint -->
-      <div class="tap-hint">
-        <span class="t1">탭하여 열어보세요</span>
-        <span class="t2" style="display:none">한번 더 탭하세요</span>
+      <div class="tap-hint" id="tapHint">
+        <div class="tap-circle">
+          <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <span class="tap-label t1">편지 열기</span>
+        <span class="tap-label t2" style="display:none">편지 읽기</span>
       </div>
     </div>
   </div>
@@ -582,6 +635,13 @@
 
     </div>
     <div class="page-num" id="pageNum">1 / 6</div>
+    <div class="swipe-hint" id="swipeHint" style="display:none">
+      <span>밀어서 넘기기</span>
+      <div class="swipe-chevrons">
+        <svg viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18"/></svg>
+        <svg viewBox="0 0 24 24" style="opacity:0.5"><polyline points="9 6 15 12 9 18"/></svg>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -617,6 +677,9 @@
           cardsWrap.classList.add('active');
           envScene.style.display='none';
           activateCard(0);
+          // Show swipe hint
+          const sh=document.getElementById('swipeHint');
+          sh.style.display='flex';
         },800);
       }
     });
