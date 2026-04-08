@@ -696,7 +696,74 @@
       if(navigator.share) navigator.share({title:'원장님의 성장 스토리',text:'나의 성장 이야기',url:location.href});
       else{navigator.clipboard?.writeText(location.href);alert('공유 링크가 복사되었습니다!')}
     });
-    document.getElementById('btnSave')?.addEventListener('click',()=>alert('편지가 저장되었습니다!'));
+    document.getElementById('btnSave')?.addEventListener('click', async ()=>{
+      const btn=document.getElementById('btnSave');
+      btn.textContent='저장 중...';
+      btn.disabled=true;
+
+      // Load html2canvas
+      if(!window.html2canvas){
+        await new Promise((res,rej)=>{
+          const s=document.createElement('script');
+          s.src='https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+          s.onload=res;s.onerror=rej;
+          document.head.appendChild(s);
+        });
+      }
+
+      // Save each card as square image
+      const allCards=document.querySelectorAll('.card');
+      const size=1080; // Instagram-friendly square
+
+      for(let i=0;i<allCards.length;i++){
+        const card=allCards[i];
+
+        // Create offscreen square container
+        const wrap=document.createElement('div');
+        wrap.style.cssText=`position:fixed;left:-9999px;top:0;width:${size}px;height:${size}px;background:${getComputedStyle(document.documentElement).getPropertyValue('--paper')};display:flex;align-items:center;justify-content:center;overflow:hidden;`;
+
+        // Clone card content
+        const clone=card.querySelector('.card-inner').cloneNode(true);
+        clone.style.cssText='width:85%;max-width:none;transform:scale(1);';
+        // Make all children visible
+        clone.querySelectorAll('.anim').forEach(el=>{
+          el.style.opacity='1';
+          el.style.transform='translateY(0)';
+        });
+        // Set counter values
+        clone.querySelectorAll('.cu').forEach(el=>{
+          el.textContent=parseInt(el.dataset.t).toLocaleString();
+        });
+        // Set progress bar
+        const pf=clone.querySelector('.prog-f');
+        if(pf) pf.style.width=pf.dataset.w+'%';
+
+        wrap.appendChild(clone);
+        document.body.appendChild(wrap);
+
+        try{
+          const canvas=await html2canvas(wrap,{
+            width:size,height:size,scale:1,
+            backgroundColor:null,
+            useCORS:true,
+            logging:false
+          });
+          const link=document.createElement('a');
+          link.download=`growth-story-${i+1}.png`;
+          link.href=canvas.toDataURL('image/png');
+          link.click();
+          // Small delay between downloads
+          await new Promise(r=>setTimeout(r,500));
+        }catch(e){
+          console.error('Save error:',e);
+        }
+        document.body.removeChild(wrap);
+      }
+
+      btn.textContent='이 편지를 간직하기';
+      btn.disabled=false;
+      alert('6장의 카드가 저장되었습니다!');
+    });
   </script>
 </body>
 </html>
